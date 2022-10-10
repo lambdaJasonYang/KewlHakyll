@@ -4,8 +4,8 @@ name: Autobuild Hakyll Site
 
 # Controls when the workflow will run
 on:
-  push:
-    branches: [main]
+#  push:
+#    branches: [main]
   # pull_request:
   #   branches: [ main ]
 
