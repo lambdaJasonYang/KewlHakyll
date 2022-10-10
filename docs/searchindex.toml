@@ -1,0 +1,37 @@
+[input]
+
+files = [
+
+{path = "posts/Misc/2021-11-07-HakyllStorkSearch.md", url = "/posts/2021-11-07-HakyllStorkSearch.html", title = "Hakyll stork search"},
+
+{path = "posts/Misc/2021-11-07-HakyllCodeTabs.md", url = "/posts/2021-11-07-HakyllCodeTabs.html", title = "Tabbed Code blocks in Hakyll"},
+
+{path = "posts/Misc/2021-11-07-HakyllAccessOnLAN.md", url = "/posts/2021-11-07-HakyllAccessOnLAN.html", title = "Access Hakyll website on LAN and iptables"},
+
+{path = "posts/Misc/2021-10-01-TableOfContent.md", url = "/posts/2021-10-01-TableOfContent.html", title = "Table Of Content in Hakyll"},
+
+{path = "posts/Misc/2021-10-01-RailroadSyntax.md", url = "/posts/2021-10-01-RailroadSyntax.html", title = "Add Railroad Syntax to Hakyll"},
+
+{path = "posts/Misc/2021-08-25-PlantUMLkey.md", url = "/posts/2021-08-25-PlantUMLkey.html", title = "PlantUML diagram list"},
+
+{path = "posts/Misc/2021-08-24-HakyllPlantUML2.md", url = "/posts/2021-08-24-HakyllPlantUML2.html", title = "Integrate PlantUML diagrams into Hakyll (Updated)"},
+
+{path = "posts/Misc/2021-08-23-PandocFiltering.md", url = "/posts/2021-08-23-PandocFiltering.html", title = "Hakyll Pandoc filtering"},
+
+{path = "posts/Misc/2021-08-23-HakyllSetupMathjax.md", url = "/posts/2021-08-23-HakyllSetupMathjax.html", title = "Adding Mathjax to Hakyll in 2021"},
+
+{path = "posts/Misc/2021-08-23-HakyllPlantUML.md", url = "/posts/2021-08-23-HakyllPlantUML.html", title = "Integrate PlantUML diagrams into Hakyll (Old)"},
+
+{path = "posts/Misc/2021-08-10-WhyHakyll.md", url = "/posts/2021-08-10-WhyHakyll.html", title = "Why Hakyll"},
+
+{path = "posts/2021-08-10-TemplatePage.md", url = "/posts/2021-08-10-TemplatePage.html", title = "Template Page (Ignore)"},
+
+{path = "posts/Misc/2021-06-28-HakyllGitAction.md", url = "/posts/2021-06-28-HakyllGitAction.html", title = "Autobuild Hakyll"},
+
+{path = "posts/Misc/2016-03-25-UpdateHakyllPost.md", url = "/posts/2016-03-25-UpdateHakyllPost.html", title = "Updating Hakyll posts"},
+
+]
+
+[output]
+
+displayed_results_count=20

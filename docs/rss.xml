@@ -1,0 +1,1336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Jason Yang: Math and Computer Science Notes</title>
+        <link>https://userjy.github.io</link>
+        <description><![CDATA[Programming language theory, haskell, induction, combinatorics, Energy based models, time series analysis, differential equations, stochastic calculus]]></description>
+        <atom:link href="https://userjy.github.io/rss.xml" rel="self"
+                   type="application/rss+xml" />
+        <lastBuildDate>Sun, 07 Nov 2021 00:00:00 UT</lastBuildDate>
+        <item>
+    <title>Hakyll stork search</title>
+    <link>https://userjy.github.io/posts/2021-11-07-HakyllStorkSearch.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on November  7, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#git-merge-conflict"><span class="toc-section-number">1</span> git merge conflict</a></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<div class="sourceCode" id="cb1" data-filename="template/search.toml"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">[input]</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">url_prefix</span> = <span class="st">&quot;</span><span class="va">$root</span><span class="st">$/&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">files</span> = [</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">$for</span><span class="kw">(</span><span class="ex">posts</span><span class="kw">)</span><span class="ex">$</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">{path</span> = <span class="st">&quot;</span><span class="va">$path</span><span class="st">$&quot;</span>, url = <span class="st">&quot;</span><span class="va">$url</span><span class="st">$&quot;</span>, title = <span class="st">&quot;</span><span class="va">$title</span><span class="st">$&quot;</span>},</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="va">$endfor</span><span class="ex">$</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb2" data-filename="site.hs"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>    <span class="ex">create</span> [<span class="st">&quot;searchindex.toml&quot;</span>] $ do</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>        <span class="ex">route</span> idRoute</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="ex">compile</span> $ do</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            <span class="ex">posts</span> <span class="op">&lt;</span>- recentFirst =<span class="op">&lt;&lt; loadAll</span> <span class="kw">(</span><span class="st">&quot;posts/*&quot;</span> .<span class="kw">||</span><span class="bu">.</span> <span class="st">&quot;posts/*/*.md&quot;</span> .<span class="kw">||</span><span class="bu">.</span> <span class="st">&quot;posts/*/*.markdown&quot;</span><span class="kw">)</span> </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="st">            let indexCtx =</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="st">                    listField &quot;posts&quot; postCtx (return posts) &lt;&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    constField &quot;title&quot; &quot;Home&quot;                &lt;&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="st">                    constField &quot;root&quot; root                   &lt;&gt;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="st">                    defaultContext</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="st">            makeItem &quot;&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="st">                &gt;&gt;= loadAndApplyTemplate &quot;templates/search.toml&quot; indexCtx</span></span></code></pre></div>
+<p>for rhel:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#on RHEL</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./stork-amazon-linux</span> build <span class="at">--input</span> <span class="st">&quot;./docs/searchindex.toml&quot;</span> <span class="at">--output</span> <span class="st">&quot;./docs/storksearch.st&quot;</span></span></code></pre></div>
+<p>for debian:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./stork-ubuntu-20-04</span> build <span class="at">--input</span> <span class="st">&quot;./docs/searchindex.toml&quot;</span> <span class="at">--output</span> <span class="st">&quot;./docs/storksearch.st&quot;</span>  </span></code></pre></div>
+<section id="git-merge-conflict" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> git merge conflict</h1>
+<p>typically you get a git merge conflict if you update your search index and want to merge to remote github.<br />
+You want to take the local new stork search so do this.</p>
+<p>Attempt a gitmerge with vscode, then you should see this with <code>git status</code></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode .txt"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>On branch main</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Your branch and &#39;origin/main&#39; have diverged,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>and have 1 and 1 different commits each, respectively.</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  (use &quot;git pull&quot; to merge the remote branch into yours)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Unmerged paths:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  (use &quot;git add &lt;file&gt;...&quot; to mark resolution)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        both modified:   docs/storksearch.st</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">--ours</span> /home/rhel/userjy.github.io/docs/storksearch.st</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span></code></pre></div>
+<p>then vscode should allow you to sync</p>
+</section>
+]]></description>
+    <pubDate>Sun, 07 Nov 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-11-07-HakyllStorkSearch.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Tabbed Code blocks in Hakyll</title>
+    <link>https://userjy.github.io/posts/2021-11-07-HakyllCodeTabs.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on November  7, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#showcase"><span class="toc-section-number">1</span> Showcase</a></li>
+<li><a href="#instruction"><span class="toc-section-number">2</span> Instruction</a></li>
+<li><a href="#usage"><span class="toc-section-number">3</span> Usage</a>
+<ul>
+<li><a href="#codeblocks"><span class="toc-section-number">3.1</span> Codeblocks</a></li>
+<li><a href="#fenced-divs"><span class="toc-section-number">3.2</span> Fenced divs</a></li>
+</ul></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="showcase" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Showcase</h1>
+<div class="sourceCode" id="cb1" data-group="bleha" data-glabel="C++"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cout <span class="op">&lt;&lt;</span> <span class="st">&quot;bleh&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2" data-group="bleha" data-glabel="py"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;bleh&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3" data-group="bleha" data-glabel="bash"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;bleh&quot;</span></span></code></pre></div>
+</section>
+<section id="instruction" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Instruction</h1>
+<p>Add the below javascript to your one of your templates like <code>default.html</code></p>
+<ul>
+<li>Structure
+<ul>
+<li>Codeblock &lt; datagroup &lt; Grouplabels &lt; Allblocks</li>
+<li><code>AllBlocks</code>: All blocks of code regardless if they are tabbed or not
+<ul>
+<li><code>grouplabels</code> is the set of all unique group names in the document
+<ul>
+<li><code>datagroup</code> is the set of codeblocks associated with a SINGLE grouplabel
+<ul>
+<li><code>codeblock</code> is one of the codeblock within a <code>datagroup</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb4" data-group="script" data-glabel="new"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> AllBlocksPre <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&quot;[data-group]&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> AllBlocks <span class="op">=</span> [<span class="op">...</span>AllBlocksPre]<span class="op">;</span> <span class="co">//gets all codeblocks w/ and w/o group label</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> getUniqueSet <span class="op">=</span> (TargetSet<span class="op">,</span>dataAttr) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">//gets the set of attributes of an array of codeblocks aka TargetSet</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> temp <span class="op">=</span> TargetSet<span class="op">.</span><span class="fu">map</span>((e) <span class="kw">=&gt;</span> (e<span class="op">.</span><span class="fu">getAttribute</span>(dataAttr)))<span class="op">;</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> temp2 <span class="op">=</span> temp<span class="op">.</span><span class="fu">filter</span>((a)<span class="kw">=&gt;</span>a)<span class="op">;</span> <span class="co">//remove nulls</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(temp2)]<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> datagroupSet <span class="op">=</span> <span class="fu">getUniqueSet</span>(AllBlocks<span class="op">,</span><span class="st">&quot;data-group&quot;</span>) <span class="co">//remove nulls</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> getCodeBlocks <span class="op">=</span> (datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">//return list of glabels CodeBlocks associated to a single group </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> AllBlocks<span class="op">.</span><span class="fu">filter</span>((dataglabelBlock)<span class="kw">=&gt;</span>(dataglabelBlock<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-group&quot;</span>) <span class="op">===</span> datagroup))<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> showBlocks <span class="op">=</span> (dataglabeltxt<span class="op">,</span>datagroupCodeBlocks) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> selectedglabelGroup <span class="op">=</span> datagroupCodeBlocks<span class="op">.</span><span class="fu">filter</span>((SingleBlock)<span class="kw">=&gt;</span>(SingleBlock<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-glabel&quot;</span>) <span class="op">===</span> dataglabeltxt))</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> NONselectedglabelGroup <span class="op">=</span> datagroupCodeBlocks<span class="op">.</span><span class="fu">filter</span>((SingleBlock)<span class="kw">=&gt;</span>(SingleBlock<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-glabel&quot;</span>) <span class="op">!==</span> dataglabeltxt))</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    selectedglabelGroup<span class="op">.</span><span class="fu">map</span>((SingleBlock) <span class="kw">=&gt;</span> (SingleBlock<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;block&quot;</span>))<span class="op">;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    (NONselectedglabelGroup <span class="op">||</span> [])<span class="op">.</span><span class="fu">map</span>((SingleBlock) <span class="kw">=&gt;</span> (SingleBlock<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;none&quot;</span>))<span class="op">;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mkBtn <span class="op">=</span> (dataglabeltxt<span class="op">,</span>datagroupCodeBlocks<span class="op">,</span>showfunc) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newbutton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;button&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    newbutton<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> dataglabeltxt<span class="op">;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    newbutton<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> ()<span class="kw">=&gt;</span>{</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">showfunc</span>(dataglabeltxt<span class="op">,</span>datagroupCodeBlocks)<span class="op">;</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> newbutton<span class="op">;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> showAll <span class="op">=</span> (datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make all codeblocks visible</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>datagroup<span class="op">.</span><span class="fu">map</span>((e)<span class="kw">=&gt;</span>(e<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;block&quot;</span>))<span class="op">;</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> buildCodeTab <span class="op">=</span> (datagroupCodeBlocks) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> leader <span class="op">=</span> datagroupCodeBlocks[<span class="dv">0</span>]<span class="op">;</span> <span class="co">//get the leader codeblock of a group of codeblock</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> setglabelstxt <span class="op">=</span> <span class="fu">getUniqueSet</span>(datagroupCodeBlocks<span class="op">,</span><span class="st">&quot;data-glabel&quot;</span>)<span class="op">;</span> </span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    setglabelstxt<span class="op">.</span><span class="fu">map</span>((singleglabeltxt)<span class="kw">=&gt;</span>{</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> btn <span class="op">=</span> <span class="fu">mkBtn</span>(singleglabeltxt<span class="op">,</span>datagroupCodeBlocks<span class="op">,</span>showBlocks)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        leader<span class="op">.</span><span class="fu">insertAdjacentElement</span>(<span class="st">&quot;beforebegin&quot;</span><span class="op">,</span>btn)<span class="op">;</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make showAll button START</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> btnShowAll <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;button&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>    btnShowAll<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&quot;All&quot;</span><span class="op">;</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    btnShowAll<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span>(e)<span class="kw">=&gt;</span>(<span class="fu">showAll</span>(datagroupCodeBlocks)))<span class="op">;</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    leader<span class="op">.</span><span class="fu">insertAdjacentElement</span>(<span class="st">&#39;beforebegin&#39;</span><span class="op">,</span> btnShowAll)<span class="op">;</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make showAllbutton </span><span class="re">END</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="co">//below code is performing actual behavior, the above code are just functions</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>datagroupSet<span class="op">.</span><span class="fu">map</span>((datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> groupOfCodeblocks <span class="op">=</span> <span class="fu">getCodeBlocks</span>(datagroup)<span class="op">;</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>    <span class="fu">buildCodeTab</span>(groupOfCodeblocks)<span class="op">;</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> firsttab <span class="op">=</span> groupOfCodeblocks[<span class="dv">0</span>]</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">showBlocks</span>(firsttab<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-glabel&quot;</span>)<span class="op">,</span>groupOfCodeblocks)<span class="op">;</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb5" data-group="script" data-glabel="old"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a> <span class="co">//Structure:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">// Codeblock &lt; Group/Grouplabel/datagroup &lt; grouplabels &lt; allblocks</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> AllBlocksPre <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&quot;[data-group]&quot;</span>)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> AllBlocks <span class="op">=</span> [<span class="op">...</span>AllBlocksPre]<span class="op">;</span> <span class="co">//gets all codeblocks w/ and w/o group label</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> rawgrouplabels <span class="op">=</span> AllBlocks<span class="op">.</span><span class="fu">map</span>((e)<span class="kw">=&gt;</span>(e<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-group&quot;</span>)))<span class="op">;</span> <span class="co">//group label w/ repeats</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> grouplabelsPre <span class="op">=</span> [<span class="op">...</span><span class="kw">new</span> <span class="bu">Set</span>(rawgrouplabels)]<span class="op">;</span> <span class="co">//get set of unique group labels</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> grouplabels <span class="op">=</span> grouplabelsPre<span class="op">.</span><span class="fu">filter</span>((a)<span class="kw">=&gt;</span>a)<span class="op">;</span> <span class="co">//remove nulls</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> getCodeBlocks <span class="op">=</span> (datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">//return list of codeblocks associated to a single group label</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> AllBlocks<span class="op">.</span><span class="fu">filter</span>((dataglabel)<span class="kw">=&gt;</span>(dataglabel<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-group&quot;</span>) <span class="op">===</span> datagroup))<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> showSingleCode <span class="op">=</span> (dataglabel<span class="op">,</span>datagroup) <span class="kw">=&gt;</span> { </span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make single codeblock visible</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    dataglabel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;block&quot;</span><span class="op">;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> nonChosen <span class="op">=</span> datagroup<span class="op">.</span><span class="fu">filter</span>((e)<span class="kw">=&gt;</span>(e<span class="op">!=</span>dataglabel))<span class="op">;</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    nonChosen<span class="op">.</span><span class="fu">map</span>((e)<span class="kw">=&gt;</span>(e<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;none&quot;</span>))<span class="op">;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> makeBtn <span class="op">=</span> (dataglabel<span class="op">,</span>datagroup<span class="op">,</span>showfunc) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make button for a single codeblock</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newbutton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;button&quot;</span>)<span class="op">;</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    newbutton<span class="op">.</span><span class="at">textContent</span><span class="op">=</span>dataglabel<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&quot;data-glabel&quot;</span>)<span class="op">;</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    newbutton<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> ()<span class="kw">=&gt;</span>{</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">showfunc</span>(dataglabel<span class="op">,</span>datagroup)<span class="op">;</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> newbutton<span class="op">;</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> showAll <span class="op">=</span> (datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make all codeblocks visible</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>datagroup<span class="op">.</span><span class="fu">map</span>((e)<span class="kw">=&gt;</span>(e<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">display</span><span class="op">=</span><span class="st">&quot;block&quot;</span>))<span class="op">;</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> buildCodeTab <span class="op">=</span> (datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> leader <span class="op">=</span> datagroup[<span class="dv">0</span>]<span class="op">;</span> <span class="co">//get the leader codeblock of a group of codeblock</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> btngrp <span class="op">=</span>datagroup<span class="op">.</span><span class="fu">map</span>((dataglabel)<span class="kw">=&gt;</span>(<span class="fu">makeBtn</span>(dataglabel<span class="op">,</span>datagroup<span class="op">,</span>showSingleCode)))<span class="op">;</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    btngrp<span class="op">.</span><span class="fu">map</span>((dataglabel)<span class="kw">=&gt;</span>{</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        leader<span class="op">.</span><span class="fu">insertAdjacentElement</span>(<span class="st">&#39;beforebegin&#39;</span><span class="op">,</span>dataglabel)<span class="op">;</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make showAll button START</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> btnShowAll <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;button&quot;</span>)<span class="op">;</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    btnShowAll<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&quot;All&quot;</span><span class="op">;</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    btnShowAll<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span>(e)<span class="kw">=&gt;</span>(<span class="fu">showAll</span>(datagroup)))<span class="op">;</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    leader<span class="op">.</span><span class="fu">insertAdjacentElement</span>(<span class="st">&#39;beforebegin&#39;</span><span class="op">,</span> btnShowAll)<span class="op">;</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    <span class="co">//make showAllbutton </span><span class="re">END</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co">//below code is performing actual behavior, the above code are just functions</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>grouplabels<span class="op">.</span><span class="fu">map</span>((datagroup) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> groupOfCodeblocks <span class="op">=</span> <span class="fu">getCodeBlocks</span>(datagroup)<span class="op">;</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>    <span class="fu">buildCodeTab</span>(groupOfCodeblocks)<span class="op">;</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">showSingleCode</span>(groupOfCodeblocks[<span class="dv">0</span>]<span class="op">,</span>groupOfCodeblocks) <span class="co">//default select the first block</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>      </span></code></pre></div>
+</section>
+<section id="usage" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Usage</h1>
+<ul>
+<li>To create a tabbed codeblock add a <code>group</code> parameter and <code>glabel</code> parameter.
+<ul>
+<li><code>group</code> parameter aggregates the codeblocks to be grouped
+<ul>
+<li>if you have multiple tabbed groups of codeblocks then the <code>group</code> parameter must be unique for each.</li>
+</ul></li>
+<li><code>glabel</code> is the text shown on the tab</li>
+</ul></li>
+</ul>
+<section id="codeblocks" class="level2" data-number="3.1">
+<h2 data-number="3.1"><span class="header-section-number">3.1</span> Codeblocks</h2>
+<div class="sourceCode" id="cb6" data-group="bleh" data-glabel="C++"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cout <span class="op">&lt;&lt;</span> <span class="st">&quot;bleh&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7" data-group="bleh" data-glabel="py"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;bleh&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8" data-group="bleh" data-glabel="bash"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;bleh&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- fenced codeblocks should use triple backticks ``` </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">instead of single quotes &#39;&#39;&#39; which is used here for presentation purposes --&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;{.c group=&quot;bleh&quot; glabel=&quot;C++&quot;}</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>cout &lt;&lt; &quot;bleh&quot;</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;{.py group=&quot;bleh&quot; glabel=&quot;py&quot;}</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>print(&quot;bleh&quot;)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;{.bash group=&quot;bleh&quot; glabel=&quot;bash&quot;}</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>echo &quot;bleh&quot;</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span></code></pre></div>
+</section>
+<section id="fenced-divs" class="level2" data-number="3.2">
+<h2 data-number="3.2"><span class="header-section-number">3.2</span> Fenced divs</h2>
+<div class="hobbies" data-group="hi" data-glabel="do">
+<p>Helol</p>
+</div>
+<div class="hobbies" data-group="hi" data-glabel="do">
+<p>Goodbye</p>
+</div>
+<div class="hobbies" data-group="hi" data-glabel="do">
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a4361726c2d3e44616e203a2048690a40656e64756d6c'></figure>
+</div>
+<div class="hobbies" data-group="hi" data-glabel="do2">
+<p>Begin section</p>
+</div>
+<div class="hobbies" data-group="hi" data-glabel="do2">
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c'></figure>
+</div>
+<div class="hobbies" data-group="hi" data-glabel="do2">
+<p>End section</p>
+</div>
+<p>This also works with fenced divs</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do&quot;}</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hafe</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do&quot;}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>Begin section</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do&quot;}</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39; plantuml</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>@startuml</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>Carl-&gt;Dan : Hi</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>@enduml</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do2&quot;}</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>End section</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do2&quot;}</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39; plantuml</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>@startuml</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>Alice-&gt;Bob : I am using hex</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>@enduml</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>::: {.hobbies group=&quot;hi&quot; glabel=&quot;do2&quot;}</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>hafe</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div>
+</section>
+</section>
+]]></description>
+    <pubDate>Sun, 07 Nov 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-11-07-HakyllCodeTabs.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Access Hakyll website on LAN and iptables</title>
+    <link>https://userjy.github.io/posts/2021-11-07-HakyllAccessOnLAN.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on November  7, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#scenario"><span class="toc-section-number">1</span> Scenario</a></li>
+<li><a href="#solution"><span class="toc-section-number">2</span> Solution</a></li>
+<li><a href="#theory"><span class="toc-section-number">3</span> Theory</a></li>
+<li><a href="#iptables-netstat-diagnosis"><span class="toc-section-number">4</span> iptables netstat diagnosis</a>
+<ul>
+<li><a href="#netstat"><span class="toc-section-number">4.1</span> netstat</a></li>
+<li><a href="#iptables"><span class="toc-section-number">4.2</span> iptables</a></li>
+<li><a href="#rate-limiting"><span class="toc-section-number">4.3</span> Rate limiting</a></li>
+</ul></li>
+<li><a href="#occupied-port-scenario"><span class="toc-section-number">5</span> Occupied port scenario</a></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="scenario" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Scenario</h1>
+<ol type="1">
+<li>Hakyll server: <code class="sourceCode bash"><span class="ex">listening</span> on 127.0.0.1 port 8000...</code><br />
+</li>
+<li>Client in LAN: must hit 192.168.1.245 port 8000 to see the website<br />
+Client goes to http://192.168.1.245:8000 but sees ERROR<br />
+</li>
+<li>Hakyll server: 127.0.0.1 in port 8000 cant be seen in LAN</li>
+</ol>
+<p><strong>GOAL</strong> Hakyll server: must open 127.0.0.1 port 8000 for LAN</p>
+</section>
+<section id="solution" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Solution</h1>
+<p>Solution 1:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span> exec <span class="at">--</span> site watch <span class="at">--host</span> <span class="st">&quot;0.0.0.0&quot;</span></span></code></pre></div>
+<p>Solution 2:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-w</span> net.ipv4.conf.all.route_localnet=1</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-t</span> nat <span class="at">-I</span> PREROUTING <span class="at">-p</span> tcp <span class="at">-d</span> 192.168.1.0/24 <span class="at">--dport</span> 8000 <span class="at">-j</span> DNAT <span class="at">--to-destination</span> 127.0.0.1:8000</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#list nat table rules</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-t</span> nat <span class="at">-L</span> <span class="at">--line-numbers</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#get nat table, select PREROUTING chain, delete number 2 </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-t</span> nat <span class="at">-D</span> PREROUTING 2</span></code></pre></div>
+<ul>
+<li><code>-j DNAT</code> means rewriting Destination Network Address Translation aka IP rewriting.</li>
+<li>if any site is trying to connect to “192.168.1.245:8000”(<code>-p tcp -d 192.168.1.0/24 --dport 8000</code>),<br />
+it will translate that address to “127.0.0.1:8000”(<code>-j DNAT --to-destination 127.0.0.1:8000</code>)</li>
+</ul>
+</section>
+<section id="theory" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Theory</h1>
+<p><img src="https://www.karlrupp.net/en/computer/computer/graphics/nat-chains.gif" /></p>
+<ul>
+<li><code>iptables -t filter ..</code> is default table w/ INPUT, FORWARD, OUTPUT
+<ul>
+<li>FORWARD chain is typically useless, it’s when packets isnt directed towards you but passes through you like most router packets.</li>
+</ul></li>
+<li><code>iptables -t nat ..</code> w/ PREROUTING, OUTPUT, POSTROUTING</li>
+</ul>
+</section>
+<section id="iptables-netstat-diagnosis" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> iptables netstat diagnosis</h1>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">sudo</span> iptables <span class="at">--append</span> INPUT <span class="at">--source</span> 1.2.3.4 <span class="at">--jump</span> DROP</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">--list</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Chain</span> INPUT <span class="er">(</span><span class="ex">policy</span> ACCEPT<span class="kw">)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">target</span>     prot opt source               destination</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">DROP</span>       all  <span class="at">--</span>  1.2.3.4              anywhere</span></code></pre></div>
+<ul>
+<li>says append a rule to the INPUT chain and if a packet matches source 1.2.3.4 then DROP it
+<ul>
+<li>INPUT chain means all packets coming to the server is affected by this rule</li>
+</ul></li>
+</ul>
+<section id="netstat" class="level2" data-number="4.1">
+<h2 data-number="4.1"><span class="header-section-number">4.1</span> netstat</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> netstat <span class="at">-lnp</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#tcp        0      0 0.0.0.0:8787            0.0.0.0:*               LISTEN      734/rserver </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#tcp        0      0 127.0.0.1:8000          0.0.0.0:*               LISTEN      149480/myblog </span></span></code></pre></div>
+</section>
+<section id="iptables" class="level2" data-number="4.2">
+<h2 data-number="4.2"><span class="header-section-number">4.2</span> iptables</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-L</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">### list INPUT rules</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-L</span> INPUT <span class="at">--line-numbers</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">### delete rule 2</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-D</span> INPUT 2</span></code></pre></div>
+</section>
+<section id="rate-limiting" class="level2" data-number="4.3">
+<h2 data-number="4.3"><span class="header-section-number">4.3</span> Rate limiting</h2>
+<ul>
+<li>Rate limiting is not possible with vanilla iptables because it ratelimiting requires stateful connections
+<ul>
+<li>A hashmap maps “ConnectionSrc-ConnectionDst” to {“NEW”,“ESTABLISHED”,…}</li>
+</ul></li>
+</ul>
+<p><img src="https://docs.google.com/drawings/d/e/2PACX-1vTu9nsWsRUn_a9IBpaKgBjGNGR14-AknVFs70pix7PFL2eQcqY1BagQztrH_duZDUleZ97Iq5vBnnPc/pub?w=1238&amp;h=676" /></p>
+<ul>
+<li>Using Connection state to rate limit</li>
+</ul>
+<p><img src="https://docs.google.com/drawings/d/e/2PACX-1vQgl3VdRoyti8ryMF-_NwUSgiDpdF88qGAKm3XTfAOLdV1_SOqeoJllLFtsLXSp5is9lxNHH7rlxd9H/pub?w=1297&amp;h=554" /></p>
+</section>
+</section>
+<section id="occupied-port-scenario" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Occupied port scenario</h1>
+<p>Say you launch a server to listen on port 8000<br />
+but ERROR: port 8000 being used</p>
+<p>first check what process is running on port 8000</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> netstat <span class="at">-lnp</span></span></code></pre></div>
+<p>next check what the parent process is</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-aef</span> <span class="at">--forest</span> <span class="co">#outputs PID ParentPID tree</span></span></code></pre></div>
+<p>terminate the process or it’s parent</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">kill</span> <span class="at">-9</span> <span class="op">&lt;</span>PID<span class="op">&gt;</span></span></code></pre></div>
+</section>
+]]></description>
+    <pubDate>Sun, 07 Nov 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-11-07-HakyllAccessOnLAN.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Table Of Content in Hakyll</title>
+    <link>https://userjy.github.io/posts/2021-10-01-TableOfContent.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on October  1, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#showcase"><span class="toc-section-number">1</span> Showcase</a></li>
+<li><a href="#setup"><span class="toc-section-number">2</span> Setup</a></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="showcase" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Showcase</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> TableOfContent</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">tags:</span><span class="co"> tech, prog, HakyllSetupSeries</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> y</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>...content body...</span></code></pre></div>
+<p>Any value (in our case <code class="sourceCode markdown">y</code>) given to <code class="sourceCode markdown">toc</code> metafield activates the table of content.</p>
+</section>
+<section id="setup" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Setup</h1>
+<div class="sourceCode" id="cb2" data-filename="site.hs"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 3: Setup WriterOptions</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ot">writeMathjaxOptions ::</span> <span class="dt">WriterOptions</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">--writeMathjaxOptions = defaultHakyllWriterOptions</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>writeMathjaxOptions <span class="ot">=</span> defaultHakyllWriterOptions </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                {          </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                    writerSectionDivs <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                    ,writerNumberSections  <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                    ,writerColumns <span class="ot">=</span> <span class="dv">130</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                    , writerTableOfContents <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                   , writerTOCDepth        <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                   , writerHTMLMathMethod <span class="ot">=</span> <span class="dt">MathJax</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">---------------------------------------------------TOC</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ot">tocTemplate ::</span> <span class="dt">Text.Pandoc.Template</span> <span class="dt">Data.Text.Text</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>tocTemplate <span class="ot">=</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">either</span> <span class="fu">error</span> <span class="fu">id</span> <span class="op">$</span> <span class="fu">either</span> (<span class="fu">error</span> <span class="op">.</span> <span class="fu">show</span>) <span class="fu">id</span> <span class="op">$</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    runPure <span class="op">$</span> runWithDefaultPartials <span class="op">$</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    compileTemplate <span class="st">&quot;&quot;</span> <span class="st">&quot;&lt;div id=\&quot;TOC\&quot;&gt;$toc$&lt;/div&gt;\n$body$&quot;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ot">writeTOCMathjaxOptions ::</span> <span class="dt">WriterOptions</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>writeTOCMathjaxOptions <span class="ot">=</span> writeMathjaxOptions{</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                   </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                    writerTemplate        <span class="ot">=</span> <span class="dt">Just</span> tocTemplate</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>                </span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">---------------------------------------------------</span><span class="re">END</span><span class="co"> TOC</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 4: Build the compiler using the ReaderOption and Writer Option from Step 2, 3.</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ot">mathJaxAddedCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>mathJaxAddedCompiler <span class="ot">=</span> pandocCompilerWithTransform readMathjaxOptions writeTOCMathjaxOptions addToCodeBlock</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 5: Replace the line &quot;compile $ pandocCompiler&quot; under &quot;match &quot;posts/*&quot; $ do&quot; with </span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">--&quot;compiler $ mathJaxAddedCompiler&quot;</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co">--exclude Table of Content</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ot">mathJaxAddedCompilerExTOC ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>mathJaxAddedCompilerExTOC <span class="ot">=</span> pandocCompilerWithTransform readMathjaxOptions writeMathjaxOptions addToCodeBlock</span></code></pre></div>
+<div class="sourceCode" id="cb3" data-filename="site.hs"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    match <span class="st">&quot;posts/*&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>        route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        compile <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="co">--Check TOC metadata field filled START</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            ident <span class="ot">&lt;-</span> getUnderlying                                 </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            toc   <span class="ot">&lt;-</span> getMetadataField ident <span class="st">&quot;toc&quot;</span>             </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> chosenCompiler <span class="ot">=</span> <span class="kw">case</span> toc <span class="kw">of</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> mathJaxAddedCompilerExTOC</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">Just</span> _ <span class="ot">-&gt;</span> mathJaxAddedCompiler                        </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="co">--Check TOC metadata field filled </span><span class="re">END</span><span class="co"> </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            chosenCompiler</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span>    (postCtxWithTags tags)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                <span class="op">&gt;&gt;=</span> saveSnapshot <span class="st">&quot;content&quot;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/default.html&quot;</span> (postCtxWithTags tags)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                <span class="op">&gt;&gt;=</span> relativizeUrls</span></code></pre></div>
+</section>
+]]></description>
+    <pubDate>Fri, 01 Oct 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-10-01-TableOfContent.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Add Railroad Syntax to Hakyll</title>
+    <link>https://userjy.github.io/posts/2021-10-01-RailroadSyntax.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on October  1, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Setup</h1>
+<p>add the script to your templates/default.html</p>
+<div class="sourceCode" id="cb1" data-filename="templates\default.html"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> <span class="co">&lt;!-- RAILROAD START </span><span class="er">--------------------------------------</span><span class="co"> --&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">&quot;module&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>            <span class="im">import</span> rr<span class="op">,*</span> <span class="im">as</span> rrClass <span class="im">from</span> <span class="st">&quot;/lib/railroad/railroad.js&quot;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="bu">Object</span><span class="op">.</span><span class="fu">assign</span>(<span class="bu">window</span><span class="op">,</span>rr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">rrOptions</span> <span class="op">=</span> rrClass<span class="op">.</span><span class="at">Options</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;DOMContentLoaded&#39;</span><span class="op">,</span>()<span class="kw">=&gt;</span>{<span class="fu">ReplaceDivWithSvg</span>()}<span class="op">,</span><span class="kw">false</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> ReplaceDivWithSvg <span class="op">=</span> () <span class="kw">=&gt;</span>  {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> (<span class="kw">const</span> railroadelem <span class="kw">of</span> <span class="bu">document</span><span class="op">.</span><span class="fu">getElementsByClassName</span>(<span class="st">&quot;rroad&quot;</span>) ){</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                railroadelem<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="pp">eval</span>(railroadelem<span class="op">.</span><span class="at">innerText</span><span class="op">.</span><span class="fu">trim</span>()<span class="op">+</span><span class="st">&quot;.toString()&quot;</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">&lt;link</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;stylesheet&quot;</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;/lib/railroad/railroad-diagrams.css&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- RAILROAD </span><span class="re">END</span><span class="co"> </span><span class="er">-----------------------------------------</span><span class="co"> --&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2" data-filename="site.hs"><pre class="sourceCode numberSource hs numberLines"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb2-2"><a href="#cb2-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>    hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>        <span class="op">...</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a>        match <span class="st">&quot;lib/**&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>            route   idRoute</span>
+<span id="cb2-8"><a href="#cb2-8"></a>            compile copyFileCompiler</span></code></pre></div>
+<p>Create a lib directory and create a railroad directory within the newly created lib directory.</p>
+<p>Create a file “railroad.js” inside you /lib/railroad directory and copy the contents from <a href="https://raw.githubusercontent.com/tabatkins/railroad-diagrams/gh-pages/railroad.js">this link</a></p>
+<p>Create a file “railroad-diagrams.css” /lib/railroad directory and copy the contents from <a href="https://raw.githubusercontent.com/tabatkins/railroad-diagrams/gh-pages/railroad-diagrams.css">this link</a></p>
+<p><strong>If you followed my <a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML(Updated)</a></strong></p>
+<p>Line <strong>3, 4, 20</strong> is what we added to our previous plantuml-hakyll integration code.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource hs numberLines"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">------------------------------------------------RAILROAD START</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="ot">railroad ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">Data.Text.Text</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>railroad y <span class="ot">=</span> Data.Text.pack(<span class="st">&quot;&lt;div class=&#39;rroad&#39;&gt;&quot;</span><span class="op">&lt;&gt;</span> Data.Text.unpack y <span class="op">&lt;&gt;</span> <span class="st">&quot;&lt;/div&gt;&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co">------------------------------------------------RAILROAD </span><span class="re">END</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="ot">mhexCode ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>mhexCode y <span class="ot">=</span> <span class="fu">tail</span> <span class="op">$</span> <span class="fu">init</span> ( <span class="fu">show</span> ( Data.ByteString.Base16.encode <span class="op">$</span> Data.ByteString.Char8.pack <span class="op">$</span> Data.Text.unpack y ))</span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="ot">planthtml ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">Data.Text.Text</span> </span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co">--planthtml y = T.pack (&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot; &lt;&gt; (T.unpack $ hexCode y) &lt;&gt;&quot;&#39;&gt;&lt;/figure&gt;&quot;) </span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>planthtml y <span class="ot">=</span> Data.Text.pack (<span class="st">&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot;</span> <span class="op">&lt;&gt;</span> (mhexCode <span class="op">$</span> y) <span class="op">&lt;&gt;</span><span class="st">&quot;&#39;&gt;&lt;/figure&gt;&quot;</span>) </span>
+<span id="cb3-14"><a href="#cb3-14"></a></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">--Pandoc filtering, </span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb3-17"><a href="#cb3-17"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb3-18"><a href="#cb3-18"></a>  <span class="kw">where</span><span class="ot"> ftranslate ::</span> <span class="dt">Block</span> <span class="ot">-&gt;</span> <span class="dt">Block</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (planthtml txt)</span>
+<span id="cb3-20"><a href="#cb3-20"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;railroad&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (railroad txt)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>        ftranslate x <span class="ot">=</span> x </span></code></pre></div>
+<p>Now it should work when you input codeblocks your pandoc markdown with “rroad” tag as shown below (use backticks instead of single quotes in your pandoc markdown).</p>
+<pre><code>&#39;&#39;&#39;rroad
+Diagram(&quot;foo&quot;)
+&#39;&#39;&#39;</code></pre>
+<pre class="rroad"><code>Diagram(&quot;foo&quot;)</code></pre>
+<hr />
+<p><strong>If you did NOT follow my <a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML(Updated)</a></strong></p>
+<p>Add the codeblock below to your site.hs</p>
+<div class="sourceCode" id="cb6" data-filename="site.hs"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">------------------------------------------------RAILROAD START</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ot">railroad ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">Data.Text.Text</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>railroad y <span class="ot">=</span> Data.Text.pack(<span class="st">&quot;&lt;div class=&#39;rroad&#39;&gt;&quot;</span><span class="op">&lt;&gt;</span> Data.Text.unpack y <span class="op">&lt;&gt;</span> <span class="st">&quot;&lt;/div&gt;&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">------------------------------------------------RAILROAD </span><span class="re">END</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">--Pandoc filtering, </span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;railroad&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (railroad txt)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        ftranslate x <span class="ot">=</span> x </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">--New document compiler</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="ot">modAddedCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>modAddedCompiler <span class="ot">=</span> pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addToCodeBlock</span></code></pre></div>
+<p>In your site.hs find the <code class="sourceCode haskell">match <span class="st">&quot;posts/*&quot;</span> <span class="op">$</span> <span class="kw">do</span></code> and ONLY change the compiler in line 7 to <code class="sourceCode haskell">modAddedCompiler</code></p>
+<div class="sourceCode" id="cb7" data-filename="site.hs"><pre class="sourceCode numberSource hs numberLines"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb7-2"><a href="#cb7-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>    hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>    <span class="op">...</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>      match <span class="st">&quot;posts/*&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>                route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>                compile <span class="op">$</span> modAddedCompiler <span class="co">--ONLY THIS</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span>    (postCtxWithTags tags)</span>
+<span id="cb7-9"><a href="#cb7-9"></a>                    <span class="op">...</span></span></code></pre></div>
+<p>Now it should work when you input codeblocks your pandoc markdown with “rroad” tag as shown below (use backticks instead of single quotes in your pandoc markdown).</p>
+<pre><code>&#39;&#39;&#39;rroad
+Diagram(&quot;foo&quot;)
+&#39;&#39;&#39;</code></pre>
+<pre class="rroad"><code>Diagram(&quot;foo&quot;)</code></pre>
+</section>
+]]></description>
+    <pubDate>Fri, 01 Oct 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-10-01-RailroadSyntax.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>PlantUML diagram list</title>
+    <link>https://userjy.github.io/posts/2021-08-25-PlantUMLkey.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on August 25, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;musings&#39;." href="/tags/musings.html">musings</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>
+    
+</div>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h6469677261706820677b0a202020206772617068205b0a72616e6b646972203d20224c52220a5d3b0a226e6f64653122205b0a6c6162656c203d20223c66303e20537472696e677c203c66313e204c697374207c203c66323e205365747c203c66333e20536f7274656420536574207c203c66343e2048617368220a7368617065203d20227265636f7264220a5d3b0a0a7d'></figure>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a646967726170682047207b0a2020636f6d706f756e643d747275650a72616e6b6469723d224c52220a737562677261706820636c7573746572627b0a6c6162656c203d202246756e63746f72204d223b0a737562677261706820636c7573746572617b0a6c6162656c203d202246756e63746f72204d223b0a2042205b6c6162656c3d22496e74225d0a7d3b0a7d0a0a0a737562677261706820636c75737465727b0a20206c6162656c203d202246756e63746f72204d223b0a41205b6c6162656c3d22496e74225d0a7d0a422d3e41205b6c6162656c3d226a6f696e22206c7461696c3d636c757374657262206c686561643d636c75737465725d0a0a0a7d0a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">digraph</span> G {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="va">compound</span><span class="op">=</span>true</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="va">rankdir</span><span class="op">=</span><span class="st">&quot;LR&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">subgraph</span> clusterb{</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">label</span> = <span class="st">&quot;Functor M&quot;</span><span class="kw">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">subgraph</span> clustera{</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">label</span> = <span class="st">&quot;Functor M&quot;</span><span class="kw">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a> <span class="ex">B</span> [label=<span class="st">&quot;Int&quot;</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span><span class="kw">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">subgraph</span> cluster{</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">label</span> = <span class="st">&quot;Functor M&quot;</span><span class="kw">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">A</span> [label=<span class="st">&quot;Int&quot;</span>]</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">B-</span><span class="op">&gt;</span>A [label=<span class="st">&quot;join&quot;</span> ltail=clusterb lhead=cluster]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">digraph</span> g{</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">graph</span> [</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">rankdir</span> = <span class="st">&quot;LR&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;node1&quot;</span> [</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">label</span> = <span class="st">&quot;&lt;f0&gt; String| &lt;f1&gt; List | &lt;f2&gt; Set| &lt;f3&gt; Sorted Set | &lt;f4&gt; Hash&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">shape</span> = <span class="st">&quot;record&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span><span class="kw">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<p>State Diagram only have 1 type of arrow. Activity Diagram has less control than state diagram.</p>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6162737472616374202020202020202061627374726163740a616273747261637420636c617373202022616273747261637420636c617373220a616e6e6f746174696f6e202020202020616e6e6f746174696f6e0a28292020202020202020202020202020636972636c650a636c6173732020202020202020202020636c6173730a3c3e20202020202020202020202020206469616d6f6e640a656e7469747920202020202020202020656e746974790a656e756d202020202020202020202020656e756d0a696e7465726661636520202020202020696e746572666163650a40656e64756d6c'></figure>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a0a7469746c652053696d706c65204f626a656374204469616772616d0a696e74657266616365206d616d6d616c207b0a20202d566f6964204272656174680a7d0a636c61737320506572736f6e207b0a20202e2e6c6966657374796c652e2e0a20202b496e74204167650a20202b766f69642054616c6b0a20202e2e766974616c732e2e0a20202b496e7420426c6f6f6470726573737572650a7d0a6d616d6d616c202d2d6f20506572736f6e0a40656e64756d6c'></figure>
+<hr />
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a0a31202d2d2032203a20736f6c69640a31202e2e2033203a206461736865640a31202d5b68696464656e5d2d2034203a2068696464656e0a31207e7e2035203a20646f747465640a31203d3d2036203a20626f6c640a0a37202d2d20380a40656e64756d6c'></figure>
+<hr />
+<section id="sequence-diagram" class="level3" data-number="0.0.1">
+<h3 data-number="0.0.1"><span class="header-section-number">0.0.1</span> Sequence diagram</h3>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a7061727469636970616e7420557365720a0a55736572202d3e20413a20446f576f726b0a616374697661746520410a0a41202d3e20413a202043616c6c2053656c660a0a41202d3e20423a203c3c2063726561746552657175657374203e3e0a616374697661746520420a0a42202d3e20433a20446f576f726b0a616374697661746520430a43202d2d3e20423a20576f726b446f6e650a64657374726f7920430a0a42202d2d3e20413a2052657175657374437265617465640a6465616374697661746520420a0a41202d3e20557365723a20446f6e650a6465616374697661746520410a0a40656e64756d6c'></figure>
+<ul>
+<li>Step into function call
+<ul>
+<li><code class="code">-&gt;</code></li>
+</ul></li>
+<li>Step out/return from call
+<ul>
+<li><code class="code">--&gt;</code></li>
+</ul></li>
+</ul>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a0a42202d3e20423a0a616374697661746520420a42202d3e20423a0a616374697661746520420a42202d3e20423a0a616374697661746520420a42202d2d3e20423a0a6465616374697661746520420a42202d2d3e20423a0a6465616374697661746520420a42202d2d3e20423a0a6465616374697661746520420a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">activate</span> B</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">activate</span> B</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">activate</span> B</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">--</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">deactivate</span> B</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">--</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">deactivate</span> B</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">--</span><span class="op">&gt;</span> B:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">deactivate</span> B</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6175746f6163746976617465206f6e0a42202d3e20423a0a0a0a42202d3e20423a0a42202d3e20423a0a0a72657475726e0a72657475726e0a72657475726e0a0a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">autoactivate</span> on</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">B</span> <span class="at">-</span><span class="op">&gt;</span> B:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c696365202d3e20426f623a2041757468656e7469636174696f6e20526571756573740a616c74207375636365737366756c20636173650a426f62202d3e20416c6963653a2041757468656e7469636174696f6e2041636365707465640a656c736520736f6d65206b696e64206f66206661696c7572650a426f62202d3e20416c6963653a2041757468656e7469636174696f6e204661696c7572650a67726f7570204d79206f776e206c6162656c0a416c696365202d3e204c6f67203a204c6f672061747461636b2073746172740a6c6f6f7020313030302074696d65730a416c696365202d3e20426f623a20444e532041747461636b0a656e640a416c696365202d3e204c6f67203a204c6f672061747461636b20656e640a656e640a656c736520416e6f746865722074797065206f66206661696c7572650a426f62202d3e20416c6963653a20506c65617365207265706561740a656e640a40656e64756d6c'></figure>
+<hr />
+</section>
+<section id="graphviz" class="level3" data-number="0.0.2">
+<h3 data-number="0.0.2"><span class="header-section-number">0.0.2</span> graphviz</h3>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6469677261706820776f726c64207b0a73697a653d22372c37223b0a097b72616e6b3d73616d653b203120323b7d0a097b72616e6b3d73616d653b203320343b7d0a097b72616e6b3d73616d653b203520363b7d0a097b72616e6b3d73616d653b203720383b7d0a31202d3e207b20322033207d205b636f6c6f723d626c75655d0a32202d3e207b2034207d205b636f6c6f723d726564206469723d626f74685d0a34202d3e207b203520367d205b636f6c6f723d677265656e206469723d6e6f6e6520636f6d6d656e743d68656c6c6f5d0a35202d3e207b20367d205b636f6c6f723d677265656e206c6162656c3d2268656c6c6f22207374796c653d646f747465645d0a7d0a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">digraph</span> world {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="va">size</span><span class="op">=</span><span class="st">&quot;7,7&quot;</span><span class="kw">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>	<span class="ex">{rank=same</span><span class="kw">;</span> <span class="ex">1</span> 2<span class="kw">;</span><span class="er">}</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>	<span class="ex">{rank=same</span><span class="kw">;</span> <span class="ex">3</span> 4<span class="kw">;</span><span class="er">}</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>	<span class="ex">{rank=same</span><span class="kw">;</span> <span class="ex">5</span> 6<span class="kw">;</span><span class="er">}</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>	<span class="ex">{rank=same</span><span class="kw">;</span> <span class="ex">7</span> 8<span class="kw">;</span><span class="er">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">1</span> <span class="at">-</span><span class="op">&gt;</span> 2 </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">2</span> <span class="at">-</span><span class="op">&gt;</span> 3 [color=blue]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6469677261706820776f726c64207b0a0a6e6f6465205b73686170653d7265636f72645d3b0a73747275637431205b6c6162656c3d223c66303e206c6566747c3c66313e206d6964646c657c3c66323e207269676874225d3b0a73747275637432205b6c6162656c3d223c66303e206f6e657c203c66313e2074776f225d3b0a0a737472756374313a6630202d3e20737472756374323a66313b0a7d0a0a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">digraph</span> world {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">node</span> [shape=record]<span class="kw">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">struct1</span> [label=<span class="st">&quot;&lt;f0&gt; left|&lt;f1&gt; middle|&lt;f2&gt; right&quot;</span>]<span class="kw">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">struct2</span> [label=<span class="st">&quot;&lt;f0&gt; one| &lt;f1&gt; two&quot;</span>]<span class="kw">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">struct1:f0</span> <span class="at">-</span><span class="op">&gt;</span> struct2:f1<span class="kw">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6469677261706820776f726c64207b0a72616e6b6469723d4c520a6e6f646533205b73686170653d4d7265636f72642c206c6162656c3d227b2061207c2062207c2063207d225d0a7d0a40656e64756d6c'></figure>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startuml</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">digraph</span> world {</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="va">rankdir</span><span class="op">=</span>LR</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">node3</span> [shape=Mrecord, label=<span class="st">&quot;{ a | b | c }&quot;</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">@enduml</span></span></code></pre></div>
+<p>rankdir will turn the whole tree left, to right as well as “a b c”</p>
+<hr />
+</section>
+<section id="mindmap" class="level3" data-number="0.0.3">
+<h3 data-number="0.0.3"><span class="header-section-number">0.0.3</span> Mindmap</h3>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h4073746172746d696e646d61700a0a2a20536f6c76696e67205c6e20476c6f62616c205c6e205761726d696e670a202a20456174696e6720646966666572656e746c790a20202a20566567616e0a20202a205665676574617269616e0a20202a204c6573732070726f63657373656420666f6f64730a20202a20427579206c6f63616c20666f6f640a202a2054726176656c0a20202a2042696b65206d6f72650a20202a20526964652062757365730a20202a2042757920616e20656c656374726963206361720a0a6c65667420736964650a202a20486f6d65200a20202a5f20456e657267792061756469740a20202a5f20557365206120636c6f746873206c696e650a20202a5f2041646420696e73756c6174696f6e0a20202a5f2047657420736f6c61722070616e656c730a202a204265206120726f6c65206d6f64656c0a20202a5f20566f74650a20202a5f20456e636f7572616765206f74686572730a20202a5f20546561636820796f7572206b6964730a0a40656e646d696e646d6170'></figure>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@startmindmap</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*</span> Solving <span class="dt">\n</span> Global <span class="dt">\n</span> Warming</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">*</span> Eating differently</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Vegan</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Vegetarian</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Less processed foods</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Buy local food</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a> <span class="ex">*</span> Travel</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Bike more</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Ride buses</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*</span> Buy an electric car</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="ex">left</span> side</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a> <span class="ex">*</span> Home</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Energy audit</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Use a cloths line</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Add insulation</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Get solar panels</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a> <span class="ex">*</span> Be a role model</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Vote</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Encourage others</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">*_</span> Teach your kids</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="ex">@endmindmap</span></span></code></pre></div>
+<hr />
+</section>
+<section id="activity-diagram" class="level3" data-number="0.0.4">
+<h3 data-number="0.0.4"><span class="header-section-number">0.0.4</span> Activity diagram</h3>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a73746172740a69662028636f6e646974696f6e204129207468656e2028796573290a20203a5465787420313b0a656c736569662028636f6e646974696f6e204229207468656e2028796573290a20203a5465787420323b0a202073746f700a656c736569662028636f6e646974696f6e204329207468656e2028796573290a20203a5465787420333b0a656c736569662028636f6e646974696f6e204429207468656e2028796573290a20203a5465787420343b0a656c736520286e6f7468696e67290a20203a5465787420656c73653b0a656e6469660a73746f700a40656e64756d6c'></figure>
+<hr />
+</section>
+<section id="arrow-list" class="level3" data-number="0.0.5">
+<h3 data-number="0.0.5"><span class="header-section-number">0.0.5</span> Arrow list</h3>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a6c65667420746f20726967687420646972656374696f6e0a736b696e706172616d206e6f646573657020350a6433207e7e207633203a2022227e7e22225c6e2f2f646f747465642f2f0a6432202e2e207632203a2022222e2e22225c6e2f2f6461736865642f2f0a6431203d3d207631203a2022223d3d22225c6e2f2f626f6c642f2f0a6430202d2d207630203a2022222d2d22225c6e2f2f706c61696e2f2f0a0a0a663133202d2d3020623133203a2022222d2d3022220a663132202d2d4020623132203a2022222d2d4022220a663131202d2d3a7c3e20623131203a2022222d2d3a7c3e22220a663130202d2d7c7c3e20623130203a2022222d2d7c7c3e22220a6639202d2d7c3e206239203a2022222d2d7c3e22220a6638202d2d5e206238203a2022222d2d5e2022220a6637202d2d5c5c206237203a2022222d2d5c5c5c5c22220a6636202d2d23206236203a2022222d2d232022220a6635202d2d2b206235203a2022222d2d2b2022220a6634202d2d6f206234203a2022222d2d6f2022220a6633202d2d2a206233203a2022222d2d2a2022220a6632202d2d3e3e206232203a2022222d2d3e3e22220a6631202d2d3e206231203a2022222d2d3e2022220a6630202d2d206230203a2022222d2d2022220a0a0a67313020302d2d3020723130203a20222220302d2d302022220a673920292d2d28207239203a20222220292d2d2822220a67382030292d2d2830207238203a2022222030292d2d283022220a67372030292d2d207237203a2022222030292d2d2022220a6736202d30292d207236203a202222202d30292d5c6e2022220a6735202d2830292d207235203a202222202d2830292d5c6e22220a6734202d28302d207234203a202222202d28302d5c6e2022220a6733202d2d2830207233203a202222202d2d28302022220a6732202d2d28207232203a202222202d2d282022220a6731202d2d30207231203a202222202d2d302022220a0a0a40656e64756d6c0a'></figure>
+</section>
+]]></description>
+    <pubDate>Wed, 25 Aug 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-08-25-PlantUMLkey.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Integrate PlantUML diagrams into Hakyll (Updated)</title>
+    <link>https://userjy.github.io/posts/2021-08-24-HakyllPlantUML2.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on August 24, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#understand-the-process"><span class="toc-section-number">1</span> Understand the Process</a></li>
+<li><a href="#cabal-and-imports"><span class="toc-section-number">2</span> Cabal and Imports</a>
+<ul>
+<li><a href="#cabal-file"><span class="toc-section-number">2.1</span> Cabal file</a></li>
+<li><a href="#imports-to-site.hs"><span class="toc-section-number">2.2</span> Imports to site.hs</a></li>
+</ul></li>
+<li><a href="#site.hs"><span class="toc-section-number">3</span> site.hs</a>
+<ul>
+<li><a href="#encoding-and-process-to-img"><span class="toc-section-number">3.1</span> Encoding and process to img</a></li>
+<li><a href="#pandoc-codeblock-filtering-translation"><span class="toc-section-number">3.2</span> Pandoc Codeblock filtering + translation</a></li>
+</ul></li>
+<li><a href="#compiler-modification"><span class="toc-section-number">4</span> Compiler modification</a></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="understand-the-process" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Understand the Process</h1>
+<p>Goal is to</p>
+<ol type="1">
+<li>write plantuml code in markdown</li>
+<li>pandoc encode our code into some base64 format</li>
+<li>process the base64 encoding into a plantuml image HTML element</li>
+<li>pandoc codeblock will filter codeblocks and translate them into HTML elements</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c</span></span></code></pre></div>
+<ol type="1">
+<li>Converts code into ASCII decimal</li>
+<li>Converts ASCII decimal into hex</li>
+<li>Hex is part of URL of planttext which will generate our image</li>
+</ol>
+</section>
+<section id="cabal-and-imports" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Cabal and Imports</h1>
+<section id="cabal-file" class="level2" data-number="2.1">
+<h2 data-number="2.1"><span class="header-section-number">2.1</span> Cabal file</h2>
+<div class="sourceCode" id="cb2" data-filename="myblog.cabal"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc,</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc-types,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">text,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">base16-bytestring,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">bytestring,</span> </span></code></pre></div>
+</section>
+<section id="imports-to-site.hs" class="level2" data-number="2.2">
+<h2 data-number="2.2"><span class="header-section-number">2.2</span> Imports to site.hs</h2>
+<div class="sourceCode" id="cb3" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Char8</span> <span class="co">--for convert str to bytestr plantuml, requires cabal &#39;bytestring&#39;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Base16</span> (encode, decode) <span class="co">-- for encoding plantuml, requires cabal &#39;base16-bytestring&#39; </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Text.Pandoc.Walk</span> <span class="co">--for post-processing pandoc, requires cabal &#39;pandoc-types&#39;</span></span></code></pre></div>
+</section>
+</section>
+<section id="site.hs" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> site.hs</h1>
+<section id="encoding-and-process-to-img" class="level2" data-number="3.1">
+<h2 data-number="3.1"><span class="header-section-number">3.1</span> Encoding and process to img</h2>
+<div class="sourceCode" id="cb4" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mhexCode ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>mhexCode y <span class="ot">=</span> <span class="fu">tail</span> <span class="op">$</span> <span class="fu">init</span> ( <span class="fu">show</span> ( Data.ByteString.Base16.encode <span class="op">$</span> Data.ByteString.Char8.pack <span class="op">$</span> Data.Text.unpack y ))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ot">planthtml ::</span> <span class="dt">Data.Text.Text</span> <span class="ot">-&gt;</span> <span class="dt">Data.Text.Text</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">--planthtml y = T.pack (&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot; &lt;&gt; (T.unpack $ hexCode y) &lt;&gt;&quot;&#39;&gt;&lt;/figure&gt;&quot;) </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>planthtml y <span class="ot">=</span> Data.Text.pack (<span class="st">&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot;</span> <span class="op">&lt;&gt;</span> (mhexCode <span class="op">$</span> y) <span class="op">&lt;&gt;</span><span class="st">&quot;&#39;&gt;&lt;/figure&gt;&quot;</span>) </span></code></pre></div>
+<p>Above is our helper functions that will be used to generate the hex of our code.</p>
+<p>example:<br />
+INPUT Markdown codeblock content : <code class="sourceCode bash"><span class="ex">@startuml</span></code></p>
+<ol type="1">
+<li><code class="sourceCode haskell">Data.ByteString.Base16.encode</code> - Convert <code class="sourceCode bash"><span class="ex">@startuml</span></code> to “407374617274756D6C”</li>
+<li>intermediate hex result: “407374617274756D6C”</li>
+<li><code class="sourceCode haskell">planthtml</code> - Use hex result to create a ‘http://www.plantuml.com…’ img src DOM string.</li>
+</ol>
+<p>Notice in the plantuml image link above http://www.plantuml.com/plantuml/svg/~h407374617274756d6c…<br />
+the string after “~h” begins with “407374617274756D6C” which is our result.</p>
+</section>
+<section id="pandoc-codeblock-filtering-translation" class="level2" data-number="3.2">
+<h2 data-number="3.2"><span class="header-section-number">3.2</span> Pandoc Codeblock filtering + translation</h2>
+<p>Now we need to modify site.hs so that Hakyll will transform a PlantUML code block into a html img that links to the Planttext generated image.<br />
+We can do this with Hakyll’s Pandocs Filtering.</p>
+<div class="sourceCode" id="cb5" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">--Pandoc filtering, </span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span><span class="ot"> ftranslate ::</span> <span class="dt">Block</span> <span class="ot">-&gt;</span> <span class="dt">Block</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (planthtml txt)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        ftranslate x <span class="ot">=</span> x </span></code></pre></div>
+<p><code class="sourceCode haskell">ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt )</code> pattern matches CodeBlock objects in pandoc and finds “plantuml” annotations denoted by the Attr object <code class="sourceCode haskell">(<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[])</code><br />
+The Content of our CodeBlock is pattern matched as <code class="sourceCode haskell">txt</code>.</p>
+<p>After pattern matching it converts it into a raw html block, and applies our “Code to Img DOM” transformation function <code class="sourceCode haskell">planthtml</code> on the content.</p>
+<p>INPUT Markdown codeblock :</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;&#39;&#39;plantuml</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">@startuml  </span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="st">Alice-&gt;Bob : I am using hex  </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="st">@enduml</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;&#39;&#39;</span></span></code></pre></div>
+<p>Output DOM element :</p>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c'></figure>
+</section>
+</section>
+<section id="compiler-modification" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Compiler modification</h1>
+<ul>
+<li>If you’ve followed my <a href="2021-08-23-HakyllSetupMathjax.html">mathjax hakyll tutorial</a>, simply add the code below:</li>
+</ul>
+<div class="sourceCode" id="cb7" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mathJaxAddedCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mathJaxAddedCompiler <span class="ot">=</span> pandocCompilerWithTransform readMathjaxOptions writeMathjaxOptions addToCodeBlock</span></code></pre></div>
+<ul>
+<li>If you didn’t follow my mathjax hakyll tutorial, then add the code below:</li>
+</ul>
+<div class="sourceCode" id="cb8" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">simpleCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>simpleCompiler <span class="ot">=</span> pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addToCodeBlock</span></code></pre></div>
+</section>
+]]></description>
+    <pubDate>Tue, 24 Aug 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-08-24-HakyllPlantUML2.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Hakyll Pandoc filtering</title>
+    <link>https://userjy.github.io/posts/2021-08-23-PandocFiltering.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on August 23, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<p>Pandoc filtering and translation - similar to a compiler<br />
+It will translate certain markdown strings you type up into another form.</p>
+<p>Here I will show the simplest example:</p>
+<p>Append a text “EOF” string to all of our codeblocks automatically</p>
+<div class="sourceCode" id="cb1" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Pandoc</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Pandoc.Walk</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>  </span></code></pre></div>
+<div class="sourceCode" id="cb2" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span><span class="ot"> ftranslate ::</span> <span class="dt">Block</span> <span class="ot">-&gt;</span> <span class="dt">Block</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        ftranslate (<span class="dt">CodeBlock</span> attr txt ) <span class="ot">=</span> <span class="dt">CodeBlock</span> attr (txt <span class="op">&lt;&gt;</span> <span class="st">&quot;EOF&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        ftranslate x <span class="ot">=</span> x </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>		</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">simpleCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>simpleCompiler <span class="ot">=</span> pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addToCodeBlock</span></code></pre></div>
+<div class="sourceCode" id="cb3" data-filename="site.hs"><pre class="sourceCode numberSource hs numberLines"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb3-2"><a href="#cb3-2"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>    hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="op">...</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>      match <span class="st">&quot;posts/*&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>                route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>                compile <span class="op">$</span> simpleCompiler <span class="co">--ONLY CHANGE THIS</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>                    <span class="op">&gt;&gt;=</span> loadAndApplyTemplate <span class="st">&quot;templates/post.html&quot;</span>    (postCtxWithTags tags)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>                    <span class="op">...</span></span></code></pre></div>
+<section id="showcase" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Showcase</h1>
+<p>For example in my hakyll folder, I create a new file “2099-01-01-NewBlogPost.markdown” and the contents are</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> Hello World</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="an">tags:</span><span class="co"> tech</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>This is my blog post.</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;python</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>print(&quot;Hello World&quot;)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>&#39;&#39;&#39;</span></code></pre></div>
+<p>The codeblock will show:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;Hello World&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>EOF</span></code></pre></div>
+</section>
+<section id="extra" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Extra</h1>
+<p>Text refers to Data.Text.Text</p>
+<p>CodeBlock Attr Text Attr = (Text, [Text], [(Text, Text)])</p>
+<p><code class="sourceCode haskell"><span class="dt">CodeBlock</span> (<span class="dt">Text</span>, [<span class="dt">Text</span>], [(<span class="dt">Text</span>, <span class="dt">Text</span>)]) <span class="dt">Text</span></code></p>
+<p>We can convert CodeBlock to Dom Elements with RawBlock.</p>
+<p>RawBlock Format Text</p>
+<p>example: <code class="sourceCode haskell"><span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) <span class="dt">Text</span></code></p>
+</section>
+]]></description>
+    <pubDate>Mon, 23 Aug 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-08-23-PandocFiltering.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Adding Mathjax to Hakyll in 2021</title>
+    <link>https://userjy.github.io/posts/2021-08-23-HakyllSetupMathjax.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on August 23, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<div id="TOC"><ul>
+<li><a href="#js-setup"><span class="toc-section-number">1</span> JS setup</a></li>
+<li><a href="#cabal"><span class="toc-section-number">2</span> Cabal</a></li>
+<li><a href="#site.hs"><span class="toc-section-number">3</span> site.hs</a></li>
+<li><a href="#using-the-compiler"><span class="toc-section-number">4</span> using the Compiler</a></li>
+<li><a href="#showcase"><span class="toc-section-number">5</span> Showcase</a></li>
+</ul></div>
+<p><strong>Hakyll Setup Series</strong></p>
+<ol type="1">
+<li><a href="2021-08-23-HakyllSetupMathjax.html">Setup Mathjax</a></li>
+<li><a href="2021-08-24-HakyllPlantUML2.html">Setup PlantUML</a></li>
+<li><a href="2021-06-28-HakyllGitAction.html">Setup autobuild Hakyll site Git action CI</a></li>
+<li><a href="2021-08-23-PandocFiltering.html">Very Simple Hakyll Pandoc Filtering Example</a></li>
+<li><a href="2021-10-01-RailroadSyntax.html">Add Railroad Syntax to Hakyll</a></li>
+<li><a href="2021-10-01-TableOfContent.html">Table Of Content in Hakyll</a></li>
+<li><a href="2021-11-07-HakyllAccessOnLAN.html">Hakyll Access on LAN server</a></li>
+</ol>
+<section id="js-setup" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> JS setup</h1>
+<p>Add mathjax js to &lt;head&gt; in /templates/default.html</p>
+<p>Insert line 4,5,6 to your footer</p>
+<div class="sourceCode" id="cb1" data-filename="templates/default.html"><pre class="sourceCode numberSource html numberLines"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>...</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">&lt;footer&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="kw">&lt;script</span> <span class="er">id</span><span class="ot">=</span><span class="st">&quot;MathJax-script&quot;</span> <span class="er">async</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="ot">        src=</span><span class="st">&quot;https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">&lt;/footer&gt;</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">&lt;/body&gt;</span></span></code></pre></div>
+</section>
+<section id="cabal" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Cabal</h1>
+<p>Modify your *.cabal file</p>
+<p>Add “pandoc” under build-depends in my-site.cabal</p>
+<p>Insert line 7,8</p>
+<div class="sourceCode" id="cb2" data-filename="my-site.cabal"><pre class="sourceCode numberSource sh numberLines"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">executable</span> myblog</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="ex">...</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="ex">...</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="ex">build-depends:</span>       </span>
+<span id="cb2-5"><a href="#cb2-5"></a>    <span class="ex">base</span> <span class="op">&gt;</span>= 4.7 <span class="kw">&amp;&amp;</span> <span class="op">&lt;</span> 5,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="ex">hakyll,</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="ex">pandoc</span></span></code></pre></div>
+</section>
+<section id="site.hs" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> site.hs</h1>
+<div class="sourceCode" id="cb3" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 0: Add &quot;import Text.Pandoc&quot; in site.hs</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Text.Pandoc</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">--..</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 1: Get the mathjax Extensions that recognizes single $ in our pandocs</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ot">mathjaxExtensions ::</span> <span class="dt">Extensions</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>mathjaxExtensions <span class="ot">=</span> extensionsFromList </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                    [<span class="dt">Ext_tex_math_dollars</span> <span class="co">--  $...$ or $$...$$</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                    ,<span class="dt">Ext_tex_math_double_backslash</span> <span class="co">--  \(...\) or \[...\]</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                    ,<span class="dt">Ext_latex_macros</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                    ,<span class="dt">Ext_inline_code_attributes</span> </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                    ]</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 2: Setup ReaderOptions using the Extensions from Step 1</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ot">readMathjaxOptions ::</span> <span class="dt">ReaderOptions</span> </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>readMathjaxOptions <span class="ot">=</span> defaultHakyllReaderOptions</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                {</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                    readerExtensions <span class="ot">=</span> (readerExtensions defaultHakyllReaderOptions) <span class="op">&lt;&gt;</span> mathjaxExtensions</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 3: Setup WriterOptions</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ot">writeMathjaxOptions ::</span> <span class="dt">WriterOptions</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>writeMathjaxOptions <span class="ot">=</span> defaultHakyllWriterOptions </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                {</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                    writerHTMLMathMethod <span class="ot">=</span> <span class="dt">MathJax</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">--Step 4: Build the compiler using the ReaderOption and Writer Option from Step 2, 3.</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ot">mathJaxAddedCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>mathJaxAddedCompiler <span class="ot">=</span> pandocCompilerWith readMathjaxOptions writeMathjaxOptions</span></code></pre></div>
+</section>
+<section id="using-the-compiler" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> using the Compiler</h1>
+<p>Replace the line <code class="sourceCode haskell">compile <span class="op">$</span> pandocCompiler</code> with<br />
+<code class="sourceCode haskell">compiler <span class="op">$</span> mathJaxAddedCompiler</code><br />
+As shown in line 8</p>
+<div class="sourceCode" id="cb4" data-filename="site.hs"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span>    </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    hakyllWith config <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        match <span class="st">&quot;posts/*&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            route <span class="op">$</span> setExtension <span class="st">&quot;html&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            compile <span class="op">$</span> mathJaxAddedCompiler</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>               <span class="op">...</span></span></code></pre></div>
+<p>remember to call</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span> build</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">stack</span> exec myblog rebuild</span></code></pre></div>
+<p>to rebuild your site.hs<br />
+replace “myblog” with the name of your hakyll project</p>
+</section>
+<section id="showcase" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Showcase</h1>
+<p>After doing all this you should be able to simply write your latex using</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>$$ x \in Set $$</span></code></pre></div>
+<p><span class="math display">\[ x \in Set \]</span></p>
+</section>
+]]></description>
+    <pubDate>Mon, 23 Aug 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-08-23-HakyllSetupMathjax.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+<item>
+    <title>Integrate PlantUML diagrams into Hakyll (Old)</title>
+    <link>https://userjy.github.io/posts/2021-08-23-HakyllPlantUML.html</link>
+    <description><![CDATA[<div class="info">
+    Posted on August 23, 2021
+    
+</div>
+<div class="info">
+    
+    Tags: <a title="All pages tagged &#39;tech&#39;." href="/tags/tech.html">tech</a>, <a title="All pages tagged &#39;prog&#39;." href="/tags/prog.html">prog</a>, <a title="All pages tagged &#39;HakyllSetupSeries&#39;." href="/tags/HakyllSetupSeries.html">HakyllSetupSeries</a>
+    
+</div>
+<p>** Go here <a href="2021-08-24-HakyllPlantUML2.html">Integrate PlantUML diagrams into Hakyll (Updated)</a> that uses Hakyll libraries rather than my reinvent-the-wheel-bad implementations**</p>
+<section id="plant-uml-hex-image-link" class="level3" data-number="0.0.1">
+<h3 data-number="0.0.1"><span class="header-section-number">0.0.1</span> Plant UML hex image link</h3>
+<p>Plant UML allows us to draw UML diagram using simple code.</p>
+<p>Our goal is to allow us to write code in our pandocs markdown files in hakyll that will automatically generate the UML.<br />
+PlantUML has a server that can convert links to image urls.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c</span></span></code></pre></div>
+<ol type="1">
+<li>Converts code into ASCII decimal</li>
+<li>Converts ASCII decimal into hex</li>
+<li>Hex is part of URL of planttext which will generate our image</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">strToASCII ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>strToASCII xs <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">ord</span> xs</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ot">asciiToHex ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>asciiToHex xs <span class="ot">=</span> <span class="fu">fmap</span> (\x <span class="ot">-&gt;</span> showHex x <span class="st">&quot;&quot;</span>) xs</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ot">plantUMLhex ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">String</span> </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plantUMLhex xs <span class="ot">=</span> (<span class="fu">concat</span><span class="op">.</span>  asciiToHex  <span class="op">.</span> strToASCII) xs</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- replaceLF replaces markdown doublespace newlines hex with plantUML compatible newline hex</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ot">replaceLF ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>replaceLF xs <span class="ot">=</span>  (T.replace <span class="st">&quot;20200&quot;</span> <span class="st">&quot;0a&quot;</span>) xs</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ot">hexCode ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>hexCode y <span class="ot">=</span> (replaceLF (T.pack ( plantUMLhex (T.unpack y))))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ot">planthtml ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>planthtml y <span class="ot">=</span> T.pack (<span class="st">&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot;</span> <span class="op">&lt;&gt;</span> (T.unpack <span class="op">$</span> hexCode y) <span class="op">&lt;&gt;</span><span class="st">&quot;&#39;&gt;&lt;/figure&gt;&quot;</span>) </span></code></pre></div>
+<p>Above is our helper functions that will be used to generate the hex of our code.</p>
+<p>example:<br />
+INPUT Markdown codeblock content : <code class="sourceCode bash"><span class="ex">@startuml</span></code></p>
+<ol type="1">
+<li><code class="sourceCode haskell">strToASCII</code> - Convert <code class="sourceCode bash"><span class="ex">@startuml</span></code> to [64,115,116,97,114,116,117,109,108]</li>
+<li><code class="sourceCode haskell">asciiToHex</code> - Convert ASCII decimal encoding with [40,73,74,61,72,74,75,6D,6C]</li>
+<li><code class="sourceCode haskell"><span class="fu">concat</span></code> - [40,73,74,61,72,74,75,6D,6C] to “407374617274756D6C”</li>
+<li><code class="sourceCode haskell">replaceLF</code> - replace “20200” substrings with “0a”, in this case there are none.</li>
+<li>intermediate hex result: “407374617274756D6C”</li>
+<li><code class="sourceCode haskell">planthtml</code> - Use hex result to create a ‘http://www.plantuml.com…’ img src DOM string.</li>
+</ol>
+<p>Notice in the plantuml image link above http://www.plantuml.com/plantuml/svg/~h407374617274756d6c…<br />
+the string after “~h” begins with “407374617274756D6C” which is our result.</p>
+<p>replaceLF is neccessary because the LineFeed of our Pandocs doesn’t match PlantUML server’s LineFeed. Therefore we design a function that replaces our LineFeed hex with a suitable hex. This means in your markdown file you must add double space at the end of a line for a new line. NOTE: Updated post fixes this problem <a href="2021-08-24-HakyllPlantUML2.html">Integrate PlantUML diagrams into Hakyll (Updated)</a></p>
+</section>
+<section id="pandocs-filtering" class="level3" data-number="0.0.2">
+<h3 data-number="0.0.2"><span class="header-section-number">0.0.2</span> Pandocs filtering</h3>
+<p>Now we need to modify site.hs so that Hakyll will transform a PlantUML code block into a html img that links to the Planttext generated image.<br />
+We can do this with Hakyll’s Pandocs Filtering.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">--Pandoc filtering, </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span><span class="ot"> ftranslate ::</span> <span class="dt">Block</span> <span class="ot">-&gt;</span> <span class="dt">Block</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (planthtml txt)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        ftranslate x <span class="ot">=</span> x </span></code></pre></div>
+<p><code class="sourceCode haskell">ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt )</code> pattern matches CodeBlock objects in pandoc and finds “plantuml” annotations denoted by the Attr object <code class="sourceCode haskell">(<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[])</code><br />
+The Content of our CodeBlock is pattern matched as <code class="sourceCode haskell">txt</code>.</p>
+<p>After pattern matching it converts it into a raw html block, and applies our “Code to Img DOM” transformation function <code class="sourceCode haskell">planthtml</code> on the content.</p>
+<p>INPUT Markdown codeblock :</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;&#39;&#39;plantuml</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">@startuml  </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">Alice-&gt;Bob : I am using hex  </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="st">@enduml</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;&#39;&#39;</span></span></code></pre></div>
+<p>Output DOM element :</p>
+<figure><img src='http://www.plantuml.com/plantuml/svg/~h407374617274756d6c0a416c6963652d3e426f62203a204920616d207573696e67206865780a40656e64756d6c'></figure>
+</section>
+<section id="full-code" class="level3" data-number="0.0.3">
+<h3 data-number="0.0.3"><span class="header-section-number">0.0.3</span> Full Code</h3>
+<p>add under “build-depends” in your .cabal file</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc,</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc-types,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">text</span>  </span></code></pre></div>
+<p>Add to your site.hs</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Pandoc.Definition</span>  </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Text.Pandoc.Walk</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span>           <span class="dt">Data.Text</span>  </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Numeric</span> (showHex)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Char</span> (ord)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">strToASCII ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> [<span class="dt">Int</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>strToASCII xs <span class="ot">=</span> <span class="fu">fmap</span> <span class="fu">ord</span> xs</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">asciiToHex ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>asciiToHex xs <span class="ot">=</span> <span class="fu">fmap</span> (\x <span class="ot">-&gt;</span> showHex x <span class="st">&quot;&quot;</span>) xs</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ot">plantUMLhex ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">String</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plantUMLhex xs <span class="ot">=</span> (<span class="fu">concat</span><span class="op">.</span>  asciiToHex <span class="op">.</span> strToASCII) xs</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- replaceLF replaces markdown doublespace newlines hex with plantUML compatible newline hex</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ot">replaceLF ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>replaceLF xs <span class="ot">=</span>  (T.replace <span class="st">&quot;20200&quot;</span> <span class="st">&quot;0a&quot;</span>) xs</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ot">hexCode ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>hexCode y <span class="ot">=</span> (replaceLF (T.pack ( plantUMLhex (T.unpack y))))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="ot">planthtml ::</span> <span class="dt">T.Text</span> <span class="ot">-&gt;</span> <span class="dt">T.Text</span> </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>planthtml y <span class="ot">=</span> T.pack (<span class="st">&quot;&lt;figure&gt;&lt;img src=&#39;http://www.plantuml.com/plantuml/svg/~h&quot;</span> <span class="op">&lt;&gt;</span> (T.unpack <span class="op">$</span> hexCode y) <span class="op">&lt;&gt;</span><span class="st">&quot;&#39;&gt;&lt;/figure&gt;&quot;</span>) </span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">--Pandoc filtering, </span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="ot">addToCodeBlock ::</span> <span class="dt">Pandoc</span> <span class="ot">-&gt;</span> <span class="dt">Pandoc</span> </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>addToCodeBlock  <span class="ot">=</span> walk ftranslate </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span><span class="ot"> ftranslate ::</span> <span class="dt">Block</span> <span class="ot">-&gt;</span> <span class="dt">Block</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        ftranslate (<span class="dt">CodeBlock</span> (<span class="st">&quot;&quot;</span>,[<span class="st">&quot;plantuml&quot;</span>],[]) txt ) <span class="ot">=</span> <span class="dt">RawBlock</span> (<span class="dt">Format</span> <span class="st">&quot;html&quot;</span>) (planthtml txt)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        ftranslate x <span class="ot">=</span> x </span></code></pre></div>
+<ul>
+<li>If you’ve followed my mathjax hakyll tutorial, simply add the code below:</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">mathJaxAddedCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mathJaxAddedCompiler <span class="ot">=</span> pandocCompilerWithTransform readMathjaxOptions writeMathjaxOptions addToCodeBlock</span></code></pre></div>
+<ul>
+<li>If you didn’t follow my mathjax hakyll tutorial, then add the code below:</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">simpleCompiler ::</span> <span class="dt">Compiler</span> (<span class="dt">Item</span> <span class="dt">String</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>simpleCompiler <span class="ot">=</span> pandocCompilerWithTransform defaultHakyllReaderOptions defaultHakyllWriterOptions addToCodeBlock</span></code></pre></div>
+</section>
+]]></description>
+    <pubDate>Mon, 23 Aug 2021 00:00:00 UT</pubDate>
+    <guid>https://userjy.github.io/posts/2021-08-23-HakyllPlantUML.html</guid>
+    <dc:creator>Jason Yang</dc:creator>
+</item>
+
+    </channel>
+</rss>
