@@ -1,4 +1,5 @@
-# [Jason's Notes built with Hakyll v4.15.1.0](https://userjy.github.io/CoolHakyll)
+# [CoolHakyll Jason's Derivative of Hakyll](https://userjy.github.io/CoolHakyll)
+# [My personal site built with CoolHakyll](https://userjy.github.io/CoolHakyll)
 
 ## Site Content licensed under CC-BY-NC-ND 4.0
 
