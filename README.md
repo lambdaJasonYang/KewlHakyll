@@ -1,5 +1,6 @@
-# [CoolHakyll Jason's Derivative of Hakyll](https://userjy.github.io/CoolHakyll)
-# [My personal site built with CoolHakyll](https://userjy.github.io/CoolHakyll)
+# [KewlHakyll Jason's Derivative of Hakyll](https://userjy.github.io/KewlHakyll)
+
+[And Here is my personal site built with KewlHakyll](https://userjy.github.io/)
 
 ## Site Content licensed under CC-BY-NC-ND 4.0
 
