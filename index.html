@@ -39,7 +39,7 @@ $partial("templates/post-list-index.html")$
   searchbox.addEventListener("click",()=>{
     searchbox.disabled=true;
     searchbox.placeholder="Loading Search Index...";
-    stork.register("foo", window.location.origin + "/storksearch.st").then(()=>{
+    stork.register("foo", window.location.href + "/storksearch.st").then(()=>{
       searchbox.disabled=false;
       searchbox.placeholder="Search Index Loaded, Type Here";
       });
