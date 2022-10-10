@@ -1,4 +1,4 @@
-# [Jason's Notes built with Hakyll v4.15.1.0](https://userjy.github.io/)
+# [Jason's Notes built with Hakyll v4.15.1.0](https://userjy.github.io/CoolHakyll)
 
 ## Site Content licensed under CC-BY-NC-ND 4.0
 
@@ -15,4 +15,4 @@ The source code of this Haskell static site generator is a customized derivative
 
 ---
 
-Website: [https://userjy.github.io/](https://userjy.github.io/)
+Personal Website: [https://userjy.github.io/](https://userjy.github.io/)
